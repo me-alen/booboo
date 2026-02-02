@@ -128,13 +128,18 @@ noBtn.addEventListener("click", () => {
   const textIndex = clickCount % noTexts.length;
   noBtn.innerText = noTexts[textIndex];
 
-  // Move button randomly
-  const maxX = container.clientWidth - noBtn.offsetWidth;
-  const maxY = container.clientHeight - noBtn.offsetHeight;
+  // Move button randomly (keep inside container)
+  // Move button randomly across the whole screen (safe area)
+  const padding = 20;
 
-  const randomX = Math.random() * maxX;
-  const randomY = Math.random() * maxY;
+  const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+  const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
+  const randomX = Math.random() * (maxX - padding) + padding;
+
+  const randomY = Math.random() * (maxY - padding) + padding;
+
+  noBtn.style.position = "fixed";
   noBtn.style.left = randomX + "px";
   noBtn.style.top = randomY + "px";
 });

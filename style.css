@@ -5,22 +5,6 @@
   font-family: "Kultum Ramadhan", "Comic Neue", "Segoe UI", sans-serif;
 }
 
-/* Palisade Custom Font */
-@font-face {
-  font-family: "Palisade";
-  src: url("palisade.regular.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-/* Lucy Said OK Custom Font */
-@font-face {
-  font-family: "Lucy Said OK";
-  src: url("LucySaidOK-PersonalUse.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
 /* Kultum Ramadhan Custom Font */
 @font-face {
   font-family: "Kultum Ramadhan";
@@ -44,14 +28,14 @@ body {
   text-align: center;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   width: 90%;
-  max-width: 400px;
+  max-width: 600px;
 }
 
 h1 {
   color: #ff1493;
   margin-bottom: 30px;
-  font-family: "Lucy Said OK", cursive;
-  font-size: 50px;
+  font-family: "Kultum Ramadhan", cursive;
+  font-size: 60px;
   font-weight: normal;
   letter-spacing: 1px;
 }
@@ -65,7 +49,7 @@ button {
   padding: 12px 25px;
   border: none;
   border-radius: 30px;
-  font-size: 18px;
+  font-size: 24px;
   cursor: pointer;
   transition: 0.3s;
   position: absolute;
@@ -91,7 +75,7 @@ button {
 
 #message {
   margin-top: 25px;
-  font-size: 20px;
+  font-size: 30px;
   color: #ff1493;
   font-weight: bold;
   font-family: "Kultum Ramadhan", "Comic Neue", cursive;
@@ -183,7 +167,7 @@ button {
 }
 
 .modal-content p {
-  font-size: 18px;
+  font-size: 24px;
   color: #ff1493;
   margin-bottom: 15px;
 }
