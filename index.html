@@ -6,8 +6,12 @@
   <title>Be My Valentine 💖</title>
 
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Pacifico&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="heartBeat" loop>
+    <source src="heartbeat.mp3" type="audio/mpeg">
   </audio>
 </head>
 <body>
@@ -16,7 +20,7 @@
 
     <div class="hearts"></div>
 
-    <h1>💘 Will You Be My Valentine, Boo Boo? 💘</h1>
+    <h1>Will You Be My Valentine, Boo Boo? <br> 💘</h1>
 
     <div class="buttons">
 
@@ -27,6 +31,19 @@
     </div>
 
     <p id="message"></p>
+
+  <div class="modal" id="heartModal">
+    <div class="modal-content">
+      <p>Please don’t break my heart 💔🥺</p>
+      <button id="closeModal">I’m Sorry 💖</button>
+    </div>
+  </div>
+
+  <div class="modal" id="loadingModal">
+    <div class="modal-content">
+      <p>Processing love… 💕⏳</p>
+    </div>
+  </div>
 
   </div>
 
