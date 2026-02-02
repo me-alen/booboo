@@ -5,12 +5,13 @@ const message = document.getElementById("message");
 const noTexts = [
   "Are you sure? 🥺",
   "Pleaseee 😭",
-  "Don’t break my heart 💔",
   "Think again 😏",
+  "Don’t break my heart 💔",
   "Last chance 😤",
   "Come onnn 😘",
   "Say yes already 💕",
-  "My heart is racing… please say YES 🥺💗",
+  "My heart is racing… 💓",
+  "Why are you doing this 😭",
 ];
 
 let clickCount = 0;
@@ -25,6 +26,67 @@ const heartsContainer = document.querySelector(".hearts");
 const heartModal = document.getElementById("heartModal");
 const loadingModal = document.getElementById("loadingModal");
 const closeModalBtn = document.getElementById("closeModal");
+const bossModal = document.getElementById("bossModal");
+
+// Almost-click prank variables
+let prankCooldown = false;
+let prankEnabled = false;
+let bossMode = false;
+let bossInterval = null;
+let prankDistance = 80;
+let prankTimeout = null;
+
+// Mode control
+let currentMode = "normal"; // normal | prank | boss
+
+// Reusable teleport function for NO button
+function moveNoButton() {
+  const padding = 20;
+
+  const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+  const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+  const randomX = Math.random() * (maxX - padding) + padding;
+  const randomY = Math.random() * (maxY - padding) + padding;
+
+  // Teleport + fade
+  noBtn.classList.add("no-fade");
+
+  setTimeout(() => {
+    noBtn.style.position = "fixed";
+    noBtn.style.left = randomX + "px";
+    noBtn.style.top = randomY + "px";
+
+    // Change text on every teleport in BOSS mode
+    if (currentMode === "boss") {
+      const bossTexts = [
+        "I’m gonna cry now 🥲",
+        "That hurts 😢",
+        "Ouch 💔",
+        "Pls baby 🥺👉👈",
+        "You’re playing hard 😏",
+        "Don’t be mean 😭💘",
+        "Try YES once 😘",
+        "I’m serious now 😤❤️",
+        "My mom likes you 😆💖",
+        "Future us is crying 🥹",
+        "Okay… last last chance 😅",
+        "I bought chocolates already 🍫😭",
+        "Say YES or I’ll be sad forever 🥲",
+        "Heart.exe crashing 💔💻",
+        "Loading love… failed 😭",
+        "This button is tired 😵💘",
+      ];
+
+      const randomIndex = Math.floor(Math.random() * bossTexts.length);
+      noBtn.innerText = bossTexts[randomIndex];
+    }
+  }, 150);
+
+  setTimeout(() => {
+    noBtn.classList.remove("no-fade");
+  }, 350);
+}
 
 function typeMessage(text, speed = 40) {
   if (typingInterval) return; // Prevent restarting
@@ -89,26 +151,98 @@ yesBtn.addEventListener("click", () => {
     heartBeat.currentTime = 0;
   }
 
+  // Reset all modes on YES
+  if (bossInterval) {
+    clearInterval(bossInterval);
+    bossInterval = null;
+  }
+
+  bossMode = false;
+  prankEnabled = false;
+  currentMode = "normal";
+
   launchConfetti();
   explodeHearts();
 });
 
-// NO button
 noBtn.addEventListener("click", () => {
-  clickCount++;
+  // ======================
+  // MODE FLOW CONTROLLER
+  // normal (0–2) -> prank (5s) -> boss (10+)
+  // ======================
 
-  // Start heartbeat
+  // Count only in normal & boss mode
+  if (currentMode !== "prank") {
+    clickCount++;
+  }
+
+  // ---- Enter PRANK mode after 3 clicks ----
+  if (clickCount === 9 && currentMode === "normal") {
+    currentMode = "prank";
+    prankEnabled = true;
+    prankDistance = 120;
+
+    if (prankTimeout) clearTimeout(prankTimeout);
+
+    // End prank after 5s -> Start BOSS mode immediately
+    prankTimeout = setTimeout(() => {
+      prankEnabled = true;
+      currentMode = "boss";
+      bossMode = true;
+      prankDistance = 160;
+
+      // Show Boss Warning
+      if (bossModal) {
+        bossModal.style.display = "flex";
+        setTimeout(() => {
+          bossModal.style.display = "none";
+        }, 1500);
+      }
+
+      // Auto teleport in boss mode
+      if (bossInterval) clearInterval(bossInterval);
+      bossInterval = setInterval(() => {
+        moveNoButton();
+      }, 2000); // Slower teleport in boss mode
+    }, 5000);
+  }
+
+  // ---- Enter BOSS mode by clicks (fallback) ----
+  if (clickCount >= 10 && !bossMode && currentMode !== "prank") {
+    currentMode = "boss";
+    bossMode = true;
+    prankEnabled = true;
+    prankDistance = 160;
+
+    // Show Boss Warning
+    if (bossModal) {
+      bossModal.style.display = "flex";
+      setTimeout(() => {
+        bossModal.style.display = "none";
+      }, 1500);
+    }
+
+    // Auto teleport in boss mode
+    bossInterval = setInterval(() => {
+      moveNoButton();
+    }, 2000); // Slower teleport in boss mode
+  }
+
+  // ======================
+  // HEARTBEAT
+  // ======================
   if (heartBeat && heartBeat.paused) {
     heartBeat.play();
   }
 
-  // Increase heartbeat speed
   heartbeatSpeed += 0.1;
   if (heartBeat) {
     heartBeat.playbackRate = heartbeatSpeed;
   }
 
-  // Add shake effect
+  // ======================
+  // SHAKE EFFECT
+  // ======================
   const container = document.querySelector(".container");
   container.classList.add("shake");
 
@@ -116,6 +250,9 @@ noBtn.addEventListener("click", () => {
     container.classList.remove("shake");
   }, 400);
 
+  // ======================
+  // EMOTIONAL MESSAGE
+  // ======================
   if (clickCount === 5 && heartModal) {
     heartModal.style.display = "flex";
   }
@@ -124,24 +261,30 @@ noBtn.addEventListener("click", () => {
     typeMessage("My heart can’t take this 😭💔 Please say YES 🥺💖");
   }
 
-  // Change button text
-  const textIndex = clickCount % noTexts.length;
-  noBtn.innerText = noTexts[textIndex];
+  // ======================
+  // TEXT CONTROL
+  // ======================
 
-  // Move button randomly (keep inside container)
-  // Move button randomly across the whole screen (safe area)
-  const padding = 20;
+  // Boss mode uses only desperate texts
+  let texts = noTexts;
 
-  const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-  const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+  if (currentMode === "boss") {
+    texts = [
+      "SYSTEM OVERLOAD 💀💔",
+      "LOVE.exe FAILED 😭",
+      "EMERGENCY 🚨💘",
+      "NO ESCAPE 😈❤️",
+      "JUST SAY YES 😤🔥",
+    ];
+  }
 
-  const randomX = Math.random() * (maxX - padding) + padding;
+  const textIndex = clickCount % texts.length;
+  noBtn.innerText = texts[textIndex];
 
-  const randomY = Math.random() * (maxY - padding) + padding;
-
-  noBtn.style.position = "fixed";
-  noBtn.style.left = randomX + "px";
-  noBtn.style.top = randomY + "px";
+  // ======================
+  // MOVE BUTTON
+  // ======================
+  moveNoButton();
 });
 
 function launchConfetti() {
@@ -198,3 +341,51 @@ function explodeHearts() {
     }, 1000);
   }
 }
+
+// "Almost clicked" prank: dodge when cursor gets close
+window.addEventListener("mousemove", (e) => {
+  if (noBtn.style.display === "none") return; // If YES clicked
+  if (prankCooldown || !prankEnabled) return;
+
+  const rect = noBtn.getBoundingClientRect();
+
+  const btnCenterX = rect.left + rect.width / 2;
+  const btnCenterY = rect.top + rect.height / 2;
+
+  const dx = e.clientX - btnCenterX;
+  const dy = e.clientY - btnCenterY;
+
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // If cursor is very close, dodge
+  if (distance < prankDistance) {
+    prankCooldown = true;
+
+    // Teleport when cursor is close
+    moveNoButton();
+
+    setTimeout(() => {
+      prankCooldown = false;
+    }, 350);
+  }
+});
+
+// Slow motion when cursor is near YES button
+window.addEventListener("mousemove", (e) => {
+  const rect = yesBtn.getBoundingClientRect();
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  const dx = e.clientX - centerX;
+  const dy = e.clientY - centerY;
+
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // If close to YES, enable slow motion
+  if (distance < 120) {
+    document.body.classList.add("slowmo");
+  } else {
+    document.body.classList.remove("slowmo");
+  }
+});

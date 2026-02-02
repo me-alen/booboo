@@ -199,3 +199,48 @@ button {
     opacity: 0;
   }
 }
+
+/* Teleport + Fade Effect for NO Button */
+.no-fade {
+  animation: fadeOutIn 0.4s ease-in-out;
+}
+
+@keyframes fadeOutIn {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slow Motion Effect */
+body.slowmo {
+  transition: all 0.8s ease !important;
+}
+
+body.slowmo .container,
+body.slowmo button,
+body.slowmo .heart,
+body.slowmo .confetti {
+  transition: all 0.8s ease !important;
+}
+
+/* Boss Warning Text */
+#bossModal .modal-content p {
+  font-size: 28px;
+  font-weight: bold;
+  animation: pulseBoss 1s infinite;
+}
+
+@keyframes pulseBoss {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
